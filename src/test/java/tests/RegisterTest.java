@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
@@ -22,29 +23,45 @@ public class RegisterTest {
 
 //DOM
 
+    //POM
+
     WebDriver driver;
     public static final String URL = "http://automationpractice.com/index.php";
     Faker faker;
 
-    @BeforeMethod
+    @BeforeMethod(alwaysRun = true)
     public void setUp() throws InterruptedException {
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
         faker = new Faker(new Locale("us"));
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-        driver.manage().window().maximize();
+        //driver.manage().window().maximize();
         driver.get(URL);
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void tearDown() {
         //driver.quit();
     }
 
+    public WebElement getElement(By locator){
+        return driver.findElement(locator);
+    }
+
+    public void typeIn(By locator, String text){
+        WebElement element = getElement(locator);
+        element.sendKeys(text);
+    }
+
+    public void clickOnElement(By locator){
+        getElement(locator).click();
+    }
+
 
     @Test
-    public void registerUser() {
-        driver.findElement(By.cssSelector("a[title*='Log in']")).click();
+    @Parameters({"titleLocator"})
+    public void registerUser(String titleLocator) {
+        driver.findElement(By.cssSelector(titleLocator)).click();
         driver.findElement(By.cssSelector("input[name='email_create']")).sendKeys(faker.internet().emailAddress());
         driver.findElement(By.id("SubmitCreate")).click();
         driver.findElement(By.id("uniform-id_gender1")).click();
@@ -76,7 +93,7 @@ public class RegisterTest {
 
         driver.findElement(By.id("id_state")).click();
         getAndClickOnRandomElement(By.cssSelector("#id_state > option"));
-        driver.findElement(By.xpath("//input[@name='postcode']")).sendKeys(faker.address().zipCode());
+        driver.findElement(By.xpath("//input[@name='postcode']")).sendKeys(faker.number().digits(5));
         driver.findElement(By.id("phone_mobile")).sendKeys(faker.phoneNumber().cellPhone());
 
         driver.findElement(By.id("submitAccount")).click();
@@ -93,7 +110,7 @@ public class RegisterTest {
     @Test
     public void test() {
         System.out.println(randomize(5));
-        System.out.println(RandomStringUtils.randomAlphabetic(10));
+        System.out.println(RandomStringUtils.randomNumeric(10));
     }
 
 
